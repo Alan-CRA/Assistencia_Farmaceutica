@@ -1,4 +1,4 @@
-import Remedio
+from classes.Medicamento import Remedio
 
 class Receita:
     def __init__(self,vencimento,remedios=[]):

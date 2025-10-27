@@ -1,4 +1,5 @@
-import Receita, Remedio
+from classes.Medicamento import Remedio
+from classes.Receita import Receita
 
 class Paciente:
     def __init__(self,nome,nascimento,sexo,telefone,email,endereco,doencas=[],receitas=[],remedios=[]):
