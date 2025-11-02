@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Paciente</title>
+    <style>
+        /* Estilo simples para melhorar a aparência */
+        body { font-family: sans-serif; margin: 2em; }
+        form { max-width: 500px; }
+        label { display: block; margin-top: 1em; }
+        input, textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+        input[type="submit"] { background-color: #007bff; color: white; border: none; padding: 10px; cursor: pointer; margin-top: 1.5em; }
+    </style>
+</head>
+<body>
+    <h1>Sistema de Atenção Farmacêutica</h1>
+    <h2>Cadastrar Nova receita</h2>
+<!--pedir informacoes do medicamento, para verificar se ele ja existe no banco de dados, caso contrario criar-->
+<!--descobrir como receber o paciente_id-->
+<!--adicionar cpf em paciente-->
+    <form action="/salvar" method="post">
+        <label for="paciente_id">Paciente ID:</label>
+        <input type="text" id="paciente_id" name="paciente_id" required>
+
+        <label for="nome_medico">Nome do Medico:</label>
+        <input type="text" id="nome_medico" name="nome_medico" required>
+
+        <label for="crm_medico">CRM do Medico:</label>
+        <input type="text" id="crm_medico" name="crm_medico" required>
+
+        <label for="data_emissao">Data de emissao:</label>
+        <input type="date" id="data_emissao" name="data_emissao" required>
+
+        <input type="submit" value="Salvar Receita">
+    </form>
+
+    <br>
+    <a href="/receitas">Ver Receitas Cadastradas</a>
+</body>
+</html>

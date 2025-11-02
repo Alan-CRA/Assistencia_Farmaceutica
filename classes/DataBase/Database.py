@@ -13,23 +13,6 @@ class Database:
         return conn
 
     def init_table(self,sql):
-
-        sql_receitaItem = '''
-        CREATE TABLE IF NOT EXISTS receita_item (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            receita_id INTEGER NOT NULL,
-            medicamento_id INTEGER NOT NULL,
-            dose_num INTEGER NOT NULL,
-            dose_unidade TEXT NOT NULL,
-            frequencia_horas INTEGER NOT NULL,
-            duracao_dia INTEGER NOT NULL,
-            posologia TEXT NOT NULL,
-            quantidade INTEGER NOT NULL,
-            FOREIGN KEY(receita_id) REFERENCES receita(id)
-            FOREIGN KEY(medicamento_id) REFERENCES medicamento(id)
-        );
-        '''
-
         try:
             conn=self._get_conn()
             conn.execute(sql)

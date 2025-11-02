@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Receita</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Receitas Cadastradas</h1>
+    {% if receitas_cadastradas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Paciente ID</th>
+                    <th>Nome do medico</th>
+                    <th>CRM do medico</th>
+                    <th>Data de emissao</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% for receita in receitas_cadastradas %}
+                <tr>
+                    <td>{{ receita.paciente_id }}</td>
+                    <td>{{ receita.nome_medico }}</td>
+                    <td>{{ receita.crm_medico }}</td>
+                    <td>{{ receita.data_emissao }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhuma receita cadastrado ainda.</p>
+    {% endif %}
+
+    <br>
+    <a href="/">Cadastrar Nova receita</a>
+</body>
+</html>

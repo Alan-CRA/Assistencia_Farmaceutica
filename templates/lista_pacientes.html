@@ -12,21 +12,31 @@
 </head>
 <body>
     <h1>Pacientes Cadastrados</h1>
-
     {% if pacientes_cadastrados %}
         <table>
             <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>CPF</th>
+                    <th>Data de Nascimento</th>
+                    <th>Sexo</th>
+                    <th>Telefone</th>
+                    <th>Email</th>
+                    <th>Endereco</th>
+                    <th>Doencas</th>
                     <th>Alergias</th>
                 </tr>
             </thead>
+            
             <tbody>
                 {% for paciente in pacientes_cadastrados %}
                 <tr>
                     <td>{{ paciente.nome }}</td>
-                    <td>{{ paciente.cpf }}</td>
+                    <td>{{ paciente.nascimento }}</td>
+                    <td>{{ paciente.sexo }}</td>
+                    <td>{{ paciente.telefone }}</td>
+                    <td>{{ paciente.email }}</td>
+                    <td>{{ paciente.endereco }}</td>
+                    <td>{{ paciente.doencas }}</td>
                     <td>{{ paciente.alergias }}</td>
                 </tr>
                 {% endfor %}

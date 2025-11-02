@@ -1,5 +1,6 @@
 import sqlite3
 from classes.DataBase.Database import Database
+
 class Medicamento_db(Database):
     def __init__(self,db_file):
         self.name="medicamento"
@@ -23,5 +24,5 @@ class Medicamento_db(Database):
         sql = f'SELECT * FROM {self.name} ORDER BY id'
         return super().get_all(sql)
     
-    def create(self,**inputs):
+    def create(self,inputs):
         return super().create(self.name,inputs)

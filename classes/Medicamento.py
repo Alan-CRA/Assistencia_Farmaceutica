@@ -1,34 +1,29 @@
 class Medicamento:
     # frequencia [1,3,1]
     # 1 unidade pra ingerir,3 comprimidos diariamente("X 1")
-    def __init__(self,nome,dose,frequencia,quantidade):
-        self.__nome = nome
-        self.__dose = dose
-        self.__frequencia = frequencia
-        self.__quantidade = quantidade
 
-    
-    def getNome(self):
-        return self.__nome
-    
-    def getDose(self):
-        return self.__dose
-    
-    def getFrequencia(self):
-        return self.__frequencia
-    
-    def getQuantidade(self):
-        return self.__quantidade
-    
-    
+    def __init__(self,id,nome,principio_ativo,dosagem,forma,quantidade):
+        self.id = id
+        self.nome = nome
+        self.principio_ativo = principio_ativo
+        self.dosagem = dosagem
+        self.forma = forma
+        self.quantidade = quantidade
+        
+    def setId(self,id):
+        self.id = id
+
     def setNome(self,nome):
-        self.__nome = nome
+        self.nome = nome
 
-    def setDose(self,dose):
-        self.__dose = dose
+    def setPrincipio_ativo(self,principio_ativo):
+        self.principio_ativo = principio_ativo
 
-    def setFrequencia(self,frequencia):
-        self.__frequencia = frequencia
+    def setDose(self,dosagem):
+        self.dosagem = dosagem
+
+    def setFrequencia(self,forma):
+        self.forma = forma
 
     def setQuantidade(self,quantidade):
-        self.__quantidade = quantidade
+        self.quantidade = quantidade
