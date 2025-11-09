@@ -18,9 +18,12 @@
 <!--pedir informacoes do medicamento, para verificar se ele ja existe no banco de dados, caso contrario criar-->
 <!--descobrir como receber o paciente_id-->
 <!--adicionar cpf em paciente-->
-    <form action="/salvar" method="post">
+    <form action="/salvar_receita" method="post">
         <label for="paciente_id">Paciente ID:</label>
         <input type="text" id="paciente_id" name="paciente_id" required>
+
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" required>
 
         <label for="nome_medico">Nome do Medico:</label>
         <input type="text" id="nome_medico" name="nome_medico" required>

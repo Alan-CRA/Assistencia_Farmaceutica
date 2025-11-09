@@ -11,6 +11,7 @@ class Receita_db(Database):
         CREATE TABLE IF NOT EXISTS {self.name} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             paciente_id INTEGER NOT NULL,
+            telefone TEXT,
             nome_medico TEXT NOT NULL,
             crm_medico TEXT NOT NULL,
             data_emissao TEXT NOT NULL,

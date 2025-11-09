@@ -37,7 +37,7 @@ def cadastar_paciente():
     return render_template('cadastro_paciente.html')
 
 # 4. Define a rota para receber os dados do formulário
-@app.route('/salvar', methods=['POST'])
+@app.route('/salvar_paciente', methods=['POST'])
 def salvar_paciente():
 
     """Recebe os dados do formulário e salva na nossa lista."""
@@ -106,6 +106,7 @@ def salvar_receita():
 
     """Recebe os dados do formulário e salva na nossa lista."""
     paciente_id = request.form['paciente_id']
+    telefone = request.form['telefone']
     nome_medico = request.form['nome_medico']
     crm_medico = request.form['crm_medico']
     data_emissao = request.form['data_emissao']
@@ -113,6 +114,7 @@ def salvar_receita():
     # Cria um dicionário para o novo paciente
     nova_receita = {
         'paciente_id': paciente_id,
+        'telefone' : telefone,
         'nome_medico': nome_medico,
         'crm_medico': crm_medico,
         'data_emissao': data_emissao
@@ -121,7 +123,7 @@ def salvar_receita():
     flag = receita.create(nova_receita)
 
     if flag:
-        return redirect(url_for('home.html'))
+        return redirect(url_for('listar_receitas'))
     return render_template('cadastro_receita.html')
 
 # 5. Define a rota para mostrar a lista de pacientes cadastrados

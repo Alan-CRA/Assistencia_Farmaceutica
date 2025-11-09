@@ -17,6 +17,7 @@
             <thead>
                 <tr>
                     <th>Paciente ID</th>
+                    <th>Telefone</th>
                     <th>Nome do medico</th>
                     <th>CRM do medico</th>
                     <th>Data de emissao</th>
@@ -27,6 +28,7 @@
                 {% for receita in receitas_cadastradas %}
                 <tr>
                     <td>{{ receita.paciente_id }}</td>
+                    <td>{{ receita.telefone }}</td>
                     <td>{{ receita.nome_medico }}</td>
                     <td>{{ receita.crm_medico }}</td>
                     <td>{{ receita.data_emissao }}</td>
@@ -39,6 +41,6 @@
     {% endif %}
 
     <br>
-    <a href="/">Cadastrar Nova receita</a>
+    <a href="/cadastrar_receita">Cadastrar Nova receita</a>
 </body>
 </html>
