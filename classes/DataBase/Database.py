@@ -12,52 +12,60 @@ class Database:
         conn.row_factory = sqlite3.Row
         return conn
 
-    def init_table(self,sql):
+    def init_table(self, sql):
         try:
-            conn=self._get_conn()
+            conn = self._get_conn()
             conn.execute(sql)
             print("Tabela inicializada com sucesso.")
         except Exception as e:
             print(f"Erro ao inicializar o banco: {e}")
+        finally:
+            conn.close()
 
-    def get_all(self,sql):
+    def get_all(self, sql):
         try:
-            conn=self._get_conn()
+            conn = self._get_conn()
             cursor = conn.cursor()
             cursor.execute(sql)
             return cursor.fetchall()
         except Exception as e:
-            print(f"Erro ao buscar pacientes: {e}")
-            return [] # Retorna lista vazia em caso de erro
+            print(f"Erro ao buscar dados: {e}")
+            return []  # Retorna lista vazia em caso de erro
         finally:
             conn.close()
 
-    def create(self, table,inputs):
-        """Adiciona um novo paciente ao banco de dados."""
-        chaves=list(inputs.keys())
-        n=len(chaves)
+    def create(self, table, inputs):
+        """Adiciona um novo registro ao banco de dados."""
+        chaves = list(inputs.keys())
+        n = len(chaves)
+        
+        # Monta a parte das colunas
         sql = f'INSERT INTO {table} ('
         for i in range(n-1):
-            sql=sql+chaves[i]+", "
-        sql=sql+chaves[-1]+")"
-        sql=f"{sql} VALUES ({"?, "*(n-1)}?)"
+            sql = sql + chaves[i] + ", "
+        sql = sql + chaves[-1] + ")"
+        
+        # Monta a parte dos VALUES - CORREÇÃO DO BUG
+        placeholders = "?, " * (n-1) + "?"
+        sql = sql + f" VALUES ({placeholders})"
+        
         values = tuple(inputs.values())
+        
         try:
-            conn=self._get_conn()
+            conn = self._get_conn()
             conn.execute(sql, values)
             conn.commit()
-            return True # Sucesso
+            return True  # Sucesso
         except sqlite3.IntegrityError as e:
-            print(f"Erro: {e}")
-            return False # Falha (CPF duplicado)
+            print(f"Erro de integridade: {e}")
+            return False  # Falha (constraint duplicado)
         except Exception as e:
             print(f"Erro ao criar {table}: {e}")
-            return False # Falha (outro erro)]
+            return False  # Falha (outro erro)
         finally:
             conn.close()
 
-
     # Você poderia adicionar outros métodos aqui:
-    # def get_patient_by_id(self, id): ...
-    # def update_patient(self, id, ...): ...
-    # def delete_patient(self, id): ...
+    # def get_by_id(self, table, id): ...
+    # def update(self, table, id, ...): ...
+    # def delete(self, table, id): ...
