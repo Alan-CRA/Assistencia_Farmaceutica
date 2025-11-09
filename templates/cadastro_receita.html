@@ -2,42 +2,392 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro de Paciente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Receita</title>
     <style>
-        /* Estilo simples para melhorar a aparência */
-        body { font-family: sans-serif; margin: 2em; }
-        form { max-width: 500px; }
-        label { display: block; margin-top: 1em; }
-        input, textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
-        input[type="submit"] { background-color: #007bff; color: white; border: none; padding: 10px; cursor: pointer; margin-top: 1.5em; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header h2 {
+            color: #666;
+            font-size: 1.3em;
+            font-weight: 400;
+        }
+
+        /* Mensagens Flash */
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .no-patients-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .no-patients-warning p {
+            color: #856404;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .btn-warning {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #ffc107;
+            color: #000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        label .required {
+            color: #dc3545;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        .patient-info {
+            background: #e8f0ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .patient-info.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .patient-info p {
+            color: #555;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .patient-info strong {
+            color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .header h1 {
+                font-size: 1.6em;
+            }
+
+            .header h2 {
+                font-size: 1.1em;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Sistema de Atenção Farmacêutica</h1>
-    <h2>Cadastrar Nova receita</h2>
-<!--pedir informacoes do medicamento, para verificar se ele ja existe no banco de dados, caso contrario criar-->
-<!--descobrir como receber o paciente_id-->
-<!--adicionar cpf em paciente-->
-    <form action="/salvar_receita" method="post">
-        <label for="paciente_id">Paciente ID:</label>
-        <input type="text" id="paciente_id" name="paciente_id" required>
+    <div class="container">
+        <div class="header">
+            <h1>Sistema de Atenção Farmacêutica</h1>
+            <h2>Cadastrar Nova Receita</h2>
+        </div>
 
-        <label for="telefone">Telefone:</label>
-        <input type="text" id="telefone" name="telefone" required>
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-        <label for="nome_medico">Nome do Medico:</label>
-        <input type="text" id="nome_medico" name="nome_medico" required>
+        {% if not pacientes or pacientes|length == 0 %}
+            <div class="no-patients-warning">
+                <p>⚠️ Não há pacientes cadastrados no sistema!</p>
+                <p>É necessário cadastrar pelo menos um paciente antes de criar uma receita.</p>
+                <a href="/cadastrar_paciente" class="btn-warning">Cadastrar Primeiro Paciente</a>
+            </div>
+        {% else %}
+            <div class="info-box">
+                <p><strong>Informações:</strong></p>
+                <p>• Selecione o paciente para quem a receita será emitida</p>
+                <p>• Preencha os dados do médico responsável</p>
+                <p>• A data de emissão deve ser a data atual</p>
+            </div>
 
-        <label for="crm_medico">CRM do Medico:</label>
-        <input type="text" id="crm_medico" name="crm_medico" required>
+            <form action="/salvar_receita" method="post" id="formReceita">
+                <div class="form-group">
+                    <label for="paciente_id">
+                        Paciente <span class="required">*</span>
+                    </label>
+                    <select name="paciente_id" id="paciente_id" required onchange="mostrarInfoPaciente()">
+                        <option value="">Selecione um paciente</option>
+                        {% for p in pacientes %}
+                            <option value="{{ p.id }}" 
+                                    data-nome="{{ p.nome }}"
+                                    data-nascimento="{{ p.nascimento }}"
+                                    data-telefone="{{ p.telefone }}"
+                                    data-email="{{ p.email }}">
+                                #{{ p.id }} - {{ p.nome }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <div class="patient-info" id="patientInfo">
+                        <p><strong>Nome:</strong> <span id="infoNome"></span></p>
+                        <p><strong>Data de Nascimento:</strong> <span id="infoNascimento"></span></p>
+                        <p><strong>Telefone:</strong> <span id="infoTelefone"></span></p>
+                        <p><strong>Email:</strong> <span id="infoEmail"></span></p>
+                    </div>
+                </div>
 
-        <label for="data_emissao">Data de emissao:</label>
-        <input type="date" id="data_emissao" name="data_emissao" required>
+                <div class="form-group">
+                    <label for="nome_medico">
+                        Nome do Médico <span class="required">*</span>
+                    </label>
+                    <input type="text" id="nome_medico" name="nome_medico" 
+                           placeholder="Nome completo do médico" required>
+                </div>
 
-        <input type="submit" value="Salvar Receita">
-    </form>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="crm_medico">
+                            CRM do Médico <span class="required">*</span>
+                        </label>
+                        <input type="text" id="crm_medico" name="crm_medico" 
+                               placeholder="Ex: 12345-SP" required>
+                    </div>
 
-    <br>
-    <a href="/receitas">Ver Receitas Cadastradas</a>
+                    <div class="form-group">
+                        <label for="data_emissao">
+                            Data de Emissão <span class="required">*</span>
+                        </label>
+                        <input type="date" id="data_emissao" name="data_emissao" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Salvar Receita</button>
+            </form>
+        {% endif %}
+
+        <a href="/" class="back-link">← Voltar para o início</a>
+    </div>
+
+    <script>
+        // Define a data de hoje como padrão
+        document.addEventListener('DOMContentLoaded', function() {
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('data_emissao').value = hoje;
+        });
+
+        // Mostra informações do paciente selecionado
+        function mostrarInfoPaciente() {
+            const select = document.getElementById('paciente_id');
+            const infoDiv = document.getElementById('patientInfo');
+            const selectedOption = select.options[select.selectedIndex];
+
+            if (select.value) {
+                document.getElementById('infoNome').textContent = selectedOption.dataset.nome;
+                document.getElementById('infoNascimento').textContent = selectedOption.dataset.nascimento;
+                document.getElementById('infoTelefone').textContent = selectedOption.dataset.telefone;
+                document.getElementById('infoEmail').textContent = selectedOption.dataset.email;
+                infoDiv.classList.add('show');
+            } else {
+                infoDiv.classList.remove('show');
+            }
+        }
+    </script>
 </body>
 </html>
