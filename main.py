@@ -6,19 +6,21 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from classes.DataBase.Paciente_db import Paciente_db
 from classes.DataBase.Receita_db import Receita_db
 from classes.DataBase.Medicamento_db import Medicamento_db 
-
+from classes.DataBase.ReceitaItem_db import ReceitaItem_db
 
 paciente = Paciente_db("farmacia.db")
 receita = Receita_db("farmacia.db")
 medicamento = Medicamento_db("farmacia.db")
+receita_item = ReceitaItem_db("farmacia.db")
 
 paciente.init_table()
 receita.init_table()
 medicamento.init_table()
+receita_item.init_table()
 
 # 1. Inicializa a aplicação Flask
 app = Flask(__name__)
-app.secret_key = 'sua_chave_secreta_aqui_123'  # Necessário para flash messages
+app.secret_key = 'sua_chave_secreta_aqui_123' 
 
 # 3. Define a rota para a página principal
 @app.route('/')
@@ -96,26 +98,20 @@ def salvar_medicamento():
 
 @app.route('/cadastrar_receita')
 def cadastrar_receita():
-    # Busca todos os pacientes para popular o dropdown
     pacientes = paciente.get_all()
+    
     return render_template('cadastro_receita.html', pacientes=pacientes)
 
-# 4. Define a rota para receber os dados do formulário de receita
+
 @app.route('/salvar_receita', methods=['POST'])
 def salvar_receita():
-    """Recebe os dados do formulário e salva a receita."""
+    """Salva a receita e os itens como texto simples."""
+    
     paciente_id = request.form['paciente_id']
     nome_medico = request.form['nome_medico']
     crm_medico = request.form['crm_medico']
     data_emissao = request.form['data_emissao']
 
-    # Verifica se o paciente existe
-    if not paciente_id or paciente_id == "":
-        flash('Por favor, selecione um paciente.', 'error')
-        pacientes = paciente.get_all()
-        return render_template('cadastro_receita.html', pacientes=pacientes)
-
-    # Cria um dicionário para a nova receita
     nova_receita = {
         'paciente_id': paciente_id,
         'nome_medico': nome_medico,
@@ -123,31 +119,67 @@ def salvar_receita():
         'data_emissao': data_emissao
     }
     
-    flag = receita.create(nova_receita)
+    receita_id = receita.create(nova_receita) 
 
-    if flag:
-        flash('Receita cadastrada com sucesso!', 'success')
-        return redirect(url_for('listar_receitas'))
-    else:
-        flash('Erro ao cadastrar receita. Tente novamente.', 'error')
+    if not receita_id:
+        flash('Erro ao cadastrar a receita principal. Tente novamente.', 'error')
         pacientes = paciente.get_all()
         return render_template('cadastro_receita.html', pacientes=pacientes)
 
-# 5. Define a rota para mostrar a lista de pacientes cadastrados
+   
+    try:
+        
+        descricoes_itens = request.form.getlist('descricao_item')
+        for i in range(len(descricoes_itens)):
+            
+            descricao = descricoes_itens[i].strip()
+            
+            if not descricao:
+                continue
+                
+           
+            novo_item = {
+                'receita_id': receita_id,
+                'descricao': descricao  
+            }
+            
+            receita_item.create(novo_item) 
+            
+        flash('Receita e itens cadastrados com sucesso!', 'success')
+        return redirect(url_for('listar_receitas'))
+
+    except Exception as e:
+        flash(f'Receita salva, mas ocorreu um erro ao salvar os itens: {e}', 'error')
+        return redirect(url_for('listar_receitas'))
+
 @app.route('/pacientes')
 def listar_pacientes():
     """Renderiza a página que exibe todos os pacientes cadastrados."""
     pacientes = paciente.get_all()
     return render_template('lista_pacientes.html', pacientes_cadastrados=pacientes)
 
-# 6. Define a rota para mostrar a lista de receitas cadastradas
 @app.route('/receitas')
 def listar_receitas():
-    """Renderiza a página que exibe todas as receitas cadastradas."""
+    """Renderiza a página que exibe todas as receitas, pacientes e itens."""
+    
     receitas = receita.get_all()
-    return render_template('lista_receitas.html', receitas_cadastradas=receitas)
+    
+    todos_itens = receita_item.get_all() 
+    
+    todos_pacientes = paciente.get_all()
 
-# 7. Roda a aplicação
+    return render_template(
+        'lista_receitas.html', 
+        receitas_cadastradas=receitas,
+        itens_cadastrados=todos_itens,
+        pacientes_cadastrados=todos_pacientes  
+    )
+
+@app.route('/deletar/<int:id>/<string:table>')
+def deletar(id,table):
+    if table == 'paciente':
+        paciente.delete(id)
+        return redirect(url_for('listar_pacientes'))
+
 if __name__ == '__main__':
-    # Usando porta 8080 para evitar conflitos
     app.run(debug=True, port=8080, host='127.0.0.1')

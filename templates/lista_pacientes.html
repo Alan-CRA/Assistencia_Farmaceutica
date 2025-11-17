@@ -194,6 +194,7 @@
                             <td>{{ paciente.endereco }}</td>
                             <td>{{ paciente.doencas if paciente.doencas else '-' }}</td>
                             <td>{{ paciente.alergias if paciente.alergias else '-' }}</td>
+                            <td><a href="{{url_for('deletar',id=paciente.id, table='paciente')}}">Deletar</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>

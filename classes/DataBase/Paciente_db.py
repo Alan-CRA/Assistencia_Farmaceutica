@@ -3,8 +3,8 @@ from classes.DataBase.Database import Database
 
 class Paciente_db(Database):
     def __init__(self,db_file):
-        self.name="paciente"
         super().__init__(db_file)
+        self.name="paciente" 
 
     def init_table(self):
         sql = f'''
@@ -22,9 +22,25 @@ class Paciente_db(Database):
         '''
         return super().init_table(sql)
     
-    def get_all(self):
-        sql = f'SELECT * FROM {self.name} ORDER BY id'
-        return super().get_all(sql)
-    
     def create(self,inputs):
         return super().create(self.name,inputs)
+    
+    def get_all(self):
+        """Busca todos os pacientes da tabela 'paciente'."""
+        conn = None
+        try:
+            # CORREÇÃO AQUI:
+            conn = self._get_conn() # Usando _get_conn
+            
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT * FROM {self.name}")
+            return cursor.fetchall()
+        except Exception as e:
+            print(f"Erro ao buscar todos os {self.name}: {e}")
+            return []
+        finally:
+            if conn:
+                conn.close()
+    
+    def delete(self,id):
+        return super().delete(self.name,id)

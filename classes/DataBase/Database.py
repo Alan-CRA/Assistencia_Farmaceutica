@@ -30,10 +30,15 @@ class Database:
             return cursor.fetchall()
         except Exception as e:
             print(f"Erro ao buscar dados: {e}")
-            return []  # Retorna lista vazia em caso de erro
+            return []  
         finally:
             conn.close()
-
+    def dict_factory(self, cursor, row):
+        """Converte a tupla do SQLite em um dicionário (ex: row['nome'])."""
+        d = {}
+        for idx, col in enumerate(cursor.description):
+            d[col[0]] = row[idx]
+        return d
     def create(self, table, inputs):
         """Adiciona um novo registro ao banco de dados."""
         chaves = list(inputs.keys())
@@ -45,7 +50,7 @@ class Database:
             sql = sql + chaves[i] + ", "
         sql = sql + chaves[-1] + ")"
         
-        # Monta a parte dos VALUES - CORREÇÃO DO BUG
+        # Monta a parte dos VALUES
         placeholders = "?, " * (n-1) + "?"
         sql = sql + f" VALUES ({placeholders})"
         
@@ -55,17 +60,28 @@ class Database:
             conn = self._get_conn()
             conn.execute(sql, values)
             conn.commit()
-            return True  # Sucesso
+            return True  
         except sqlite3.IntegrityError as e:
             print(f"Erro de integridade: {e}")
-            return False  # Falha (constraint duplicado)
+            return False  
         except Exception as e:
             print(f"Erro ao criar {table}: {e}")
-            return False  # Falha (outro erro)
+            return False  
         finally:
             conn.close()
 
-    # Você poderia adicionar outros métodos aqui:
-    # def get_by_id(self, table, id): ...
-    # def update(self, table, id, ...): ...
-    # def delete(self, table, id): ...
+    def delete(self,table,id):
+        sql = f"DELETE FROM {table} WHERE id = ?"
+        try:
+            conn = self._get_conn()
+            conn.execute(sql, (id,))
+            conn.commit()
+            return True  
+        except sqlite3.IntegrityError as e:
+            print(f"Erro de integridade: {e}")
+            return False  
+        except Exception as e:
+            print(f"Erro ao deletar id {id} da tabela {table}: {e}")
+            return False  
+        finally:
+            conn.close()
