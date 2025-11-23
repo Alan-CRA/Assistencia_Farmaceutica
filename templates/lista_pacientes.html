@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Pacientes</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,70 +27,137 @@
             padding: 40px;
         }
 
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { color: #667eea; font-size: 2.2em; margin-bottom: 10px; font-weight: 600; }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-        /* --- CSS DAS MENSAGENS (Adicionado) --- */
-        .flash-messages { margin-bottom: 20px; }
-        .alert {
-            padding: 15px 20px;
+        .header h1 {
+            color: #667eea;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
             border-radius: 10px;
-            margin-bottom: 15px;
-            font-weight: 500;
-            animation: slideIn 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-        .alert-success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
-        .alert-error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
-        @keyframes slideIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
         }
-        /* -------------------------------------- */
 
-        .empty-state { text-align: center; padding: 60px 20px; }
-        .empty-state svg { width: 120px; height: 120px; margin-bottom: 20px; opacity: 0.3; }
-        .empty-state p { color: #666; font-size: 1.2em; margin-bottom: 30px; }
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
 
-        .table-wrapper { overflow-x: auto; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        thead { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        th { color: white; padding: 18px 15px; text-align: left; font-weight: 600; font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.5px; }
-        td { padding: 15px; border-bottom: 1px solid #f0f0f0; color: #333; }
-        tbody tr { transition: background-color 0.2s ease; }
-        tbody tr:hover { background-color: #f8f9ff; }
-        tbody tr:last-child td { border-bottom: none; }
+        th {
+            color: white;
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9ff;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
 
         .btn-primary {
-            display: inline-block; padding: 12px 30px;
+            display: inline-block;
+            padding: 12px 30px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; text-decoration: none; border-radius: 10px;
-            font-weight: 600; transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6); }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
 
         .back-link {
-            display: inline-block; margin-top: 30px; color: #667eea;
-            text-decoration: none; font-weight: 500; transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 30px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
-        .back-link:hover { color: #764ba2; text-decoration: underline; }
+
+        .back-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
 
         .badge {
-            display: inline-block; padding: 4px 12px; background: #e8f0ff;
-            color: #667eea; border-radius: 20px; font-size: 0.85em; font-weight: 500;
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e8f0ff;
+            color: #667eea;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
         }
-        
-        .link-perfil {
-            font-size: 0.85em; color: #667eea; text-decoration: none; font-weight: bold;
-            display: inline-block; margin-top: 5px;
-        }
-        .link-perfil:hover { text-decoration: underline; }
 
         @media (max-width: 768px) {
-            .container { padding: 25px 15px; }
-            .header h1 { font-size: 1.6em; }
-            table { font-size: 0.9em; }
-            th, td { padding: 12px 8px; }
+            .container {
+                padding: 25px 15px;
+            }
+
+            .header h1 {
+                font-size: 1.6em;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 12px 8px;
+            }
         }
     </style>
 </head>
@@ -95,18 +166,6 @@
         <div class="header">
             <h1>Pacientes Cadastrados</h1>
         </div>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
 
         {% if pacientes_cadastrados %}
             <div class="table-wrapper">
@@ -121,16 +180,13 @@
                             <th>Endereço</th>
                             <th>Doenças</th>
                             <th>Alergias</th>
-                            <th>Ações</th> </tr>
+                        </tr>
                     </thead>
                     
                     <tbody>
                         {% for paciente in pacientes_cadastrados %}
                         <tr>
-                            <td>
-                                <strong>{{ paciente.nome }}</strong><br>
-                            
-                            </td>
+                            <td><strong>{{ paciente.nome }}</strong></td>
                             <td>{{ paciente.nascimento }}</td>
                             <td>{{ paciente.sexo }}</td>
                             <td>{{ paciente.telefone }}</td>
@@ -138,12 +194,7 @@
                             <td>{{ paciente.endereco }}</td>
                             <td>{{ paciente.doencas if paciente.doencas else '-' }}</td>
                             <td>{{ paciente.alergias if paciente.alergias else '-' }}</td>
-                            <td>
-                                <a href="{{url_for('deletar',id=paciente.id, table='paciente')}}" 
-                                   style="color: red; text-decoration: none; font-size: 0.9em;">
-                                   Deletar
-                                </a>
-                            </td>
+                            <td><a href="{{url_for('deletar',id=paciente.id, table='paciente')}}">Deletar</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
