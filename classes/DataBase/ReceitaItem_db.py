@@ -7,11 +7,9 @@ class ReceitaItem_db(Database):
         self.name = 'receita_item'
 
     def init_table(self):
-        """Cria a tabela 'receita_item' se ela não existir."""
-        conn = None 
+        conn = None
         try:
-        
-            conn = self._get_conn() # Usando _get_conn
+            conn = self._get_conn()
             cursor = conn.cursor()
             
             cursor.execute(f"""
@@ -19,59 +17,60 @@ class ReceitaItem_db(Database):
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 receita_id INTEGER NOT NULL,
                 descricao TEXT NOT NULL,
+                dias_tratamento INTEGER,
+                uso_continuo TEXT, 
                 FOREIGN KEY(receita_id) REFERENCES receita(id)
             )
             """)
-            
             conn.commit()
-            print(f"Tabela '{self.name}' inicializada com sucesso.")
         except Exception as e:
-            print(f"Erro ao inicializar tabela '{self.name}': {e}")
+            print(f"Erro tabela: {e}")
         finally:
-            if conn:
-                conn.close()
-
+            if conn: conn.close()
 
     def create(self, item):
-        """Cria um novo item de receita (apenas com texto)."""
         conn = None
         try:
-            
-            conn = self._get_conn() # Usando _get_conn
+            conn = self._get_conn()
             cursor = conn.cursor()
             
             cursor.execute(
-                f"INSERT INTO {self.name} (receita_id, descricao) VALUES (?, ?)",
-                (item['receita_id'], item['descricao'])
+                f"INSERT INTO {self.name} (receita_id, descricao, dias_tratamento, uso_continuo) VALUES (?, ?, ?, ?)",
+                (item['receita_id'], item['descricao'], item['dias_tratamento'], item['uso_continuo'])
             )
             
             novo_id = cursor.lastrowid
             conn.commit()
             return novo_id
-            
         except Exception as e:
-            print(f"Erro ao criar item de receita: {e}")
-            if conn:
-                conn.rollback()
+            print(f"Erro create: {e}")
+            if conn: conn.rollback()
             return None
         finally:
-            if conn:
-                conn.close()
-                
-    def get_all(self):
-        """Busca todos os itens da tabela 'receita_item'."""
+            if conn: conn.close()
+
+    def get_by_receita_id(self, receita_id):
         conn = None
         try:
-            # CORREÇÃO AQUI:
-            conn = self._get_conn() # Usando _get_conn
+            conn = self._get_conn()
+            conn.row_factory = self.dict_factory
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT * FROM {self.name} WHERE receita_id = ?", (receita_id,))
+            return cursor.fetchall()
+        except Exception:
+            return []
+        finally:
+            if conn: conn.close()
             
-            
+    def get_all(self):
+        conn = None
+        try:
+            conn = self._get_conn()
+            conn.row_factory = self.dict_factory
             cursor = conn.cursor()
             cursor.execute(f"SELECT * FROM {self.name}")
             return cursor.fetchall()
-        except Exception as e:
-            print(f"Erro ao buscar todos os {self.name}: {e}")
+        except Exception:
             return []
         finally:
-            if conn:
-                conn.close()
+            if conn: conn.close()
