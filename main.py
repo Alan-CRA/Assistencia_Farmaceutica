@@ -1,22 +1,32 @@
-from classes.Receita import Receita
-from classes.Medicamento import Medicamento
-
 from flask import Flask, render_template, request, redirect, url_for, flash
+
+import re
+from datetime import datetime, timedelta
+
 
 from classes.DataBase.Paciente_db import Paciente_db
 from classes.DataBase.Receita_db import Receita_db
-from classes.DataBase.Medicamento_db import Medicamento_db 
 from classes.DataBase.ReceitaItem_db import ReceitaItem_db
+
+
 
 paciente = Paciente_db("farmacia.db")
 receita = Receita_db("farmacia.db")
-medicamento = Medicamento_db("farmacia.db")
 receita_item = ReceitaItem_db("farmacia.db")
 
 paciente.init_table()
 receita.init_table()
-medicamento.init_table()
 receita_item.init_table()
+
+
+def calcula_tempo_restante(dose_total_mg,intervalo_horas, dose_por_tomada_mg,  inicio):
+    doses_totais = dose_total_mg / dose_por_tomada_mg
+    tempo_total = timedelta(hours=doses_totais * intervalo_horas)
+    fim = inicio + tempo_total
+    agora = datetime.now()
+
+    diff = fim - agora
+    return diff.days 
 
 # 1. Inicializa a aplicação Flask
 app = Flask(__name__)
@@ -65,36 +75,6 @@ def salvar_paciente():
         flash('Erro ao cadastrar paciente. Verifique se o email já não está cadastrado.', 'error')
         return redirect(url_for('cadastrar_paciente'))
 
-
-@app.route('/cadastrar_medicamento')
-def cadastrar_medicamento():
-    return render_template('cadastro_medicamento.html')
-
-@app.route('/salvar_medicamento', methods=['POST'])
-def salvar_medicamento():
-    """Recebe os dados do formulário e salva o medicamento."""
-    nome = request.form['nome']
-    principio_ativo = request.form['principio_ativo']
-    dosagem = request.form['dosagem']
-    forma = request.form['forma']
-    quantidade = request.form['quantidade']
-    
-    # Cria um dicionário para o novo medicamento
-    novo_medicamento = {
-        'nome': nome,
-        'principio_ativo': principio_ativo,
-        'dosagem': dosagem,
-        'forma': forma,
-        'quantidade': quantidade
-    }
-    flag = medicamento.create(novo_medicamento)
-
-    if flag:
-        flash('Medicamento cadastrado com sucesso!', 'success')
-        return redirect(url_for('home'))
-    else:
-        flash('Erro ao cadastrar medicamento. Verifique se já não existe um igual.', 'error')
-        return render_template('cadastro_medicamento.html')
 
 @app.route('/cadastrar_receita')
 def cadastrar_receita():
@@ -174,6 +154,45 @@ def listar_receitas():
         itens_cadastrados=todos_itens,
         pacientes_cadastrados=todos_pacientes  
     )
+
+
+@app.route('/registros')
+def listar_registros():
+    receitas = receita.get_all()
+    itens = receita_item.get_all()
+    pacientes = paciente.get_all()
+
+    registros = []
+
+    for item in itens:
+        numeros = re.findall(r'\d+', item["descricao"])
+        numeros = list(map(int, numeros))
+
+        if len(numeros) == 4:
+            for r in receitas:
+                if r['id'] == item['receita_id']:
+
+                    # Nome do paciente
+                    nome_paciente = None
+                    for p in pacientes:
+                        if p['id'] == r['paciente_id']:
+                            nome_paciente = p['nome']
+                            break
+
+                    # Data de início do medicamento
+                    inicio = datetime.strptime(r["data_emissao"], "%Y-%m-%d")
+
+                    # Dias restantes
+                    restante = calcula_tempo_restante(numeros[0],numeros[1],numeros[3],inicio=inicio)
+
+                    # Montar registro
+                    registros.append({
+                        "paciente": nome_paciente,
+                        "medicamento": item["descricao"].split("-")[0].strip(),
+                        "restante": restante,
+                        'telefone': p['telefone']
+                    })
+    return render_template("lista_registros.html", registros=registros)
 
 @app.route('/deletar/<int:id>/<string:table>')
 def deletar(id,table):
