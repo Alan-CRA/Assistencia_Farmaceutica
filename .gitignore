@@ -1,0 +1,7 @@
+# Ignora a pasta do ambiente virtual (venv)
+venv/
+
+# Ignora todos os arquivos de banco de dados SQLite/outros
+*.db
+
+**/__pycache__
