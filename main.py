@@ -4,9 +4,9 @@ import re
 from datetime import datetime, timedelta
 
 
-from classes.DataBase.Paciente_db import Paciente_db
-from classes.DataBase.Receita_db import Receita_db
-from classes.DataBase.ReceitaItem_db import ReceitaItem_db
+from classes.Paciente_db import Paciente_db
+from classes.Receita_db import Receita_db
+from classes.ReceitaItem_db import ReceitaItem_db
 
 
 
@@ -199,6 +199,9 @@ def deletar(id,table):
     if table == 'paciente':
         paciente.delete(id)
         return redirect(url_for('listar_pacientes'))
+    elif table == 'receita':
+        receita.delete(id)
+        return redirect(url_for('listar_receitas'))
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080, host='127.0.0.1')
