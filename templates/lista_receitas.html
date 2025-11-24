@@ -146,7 +146,8 @@
                             <th>Paciente</th>
                             <th>Médico / CRM</th>
                             <th>Data</th>
-                            <th style="width: 40%;">Itens da Receita</th> 
+                            <th style="width: 40%;">Itens da Receita</th>
+                            
                         </tr>
                     </thead>
                     
@@ -181,6 +182,7 @@
                                     {% endfor %}
                                 </ul>
                             </td>
+                            <td><a href="{{url_for('deletar',id=receita.id, table='receita')}}">Deletar</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>

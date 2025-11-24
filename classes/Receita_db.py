@@ -1,5 +1,5 @@
 import sqlite3
-from classes.DataBase.Database import Database
+from .Database import Database
 
 class Receita_db(Database):
     def __init__(self, db_file):
@@ -64,6 +64,35 @@ class Receita_db(Database):
         finally:
             if conn:
                 conn.close()
-        
-    def delete(self,id):
-        return super().delete(self.name,id)
+                
+    def delete(self, receita_id):
+        try:
+            conn = self._get_conn()
+
+            # cur.execute(sql_select_receita_ids, (paciente_id,))
+            # receita_ids = cur.fetchall()
+            
+            self._delete_receitaitem(conn, receita_id)
+
+            self._delete_receita(conn, receita_id)
+
+            conn.commit()
+            return True
+            
+        except sqlite3.Error as e:
+            print(f"ERRO CRÍTICO na deleção em cascata (ROLLBACK): {e}")
+            if conn:
+                conn.rollback()
+            return False
+            
+        finally:
+            conn.close()
+
+    def _delete_receita(self, conn, paciente_id):
+        sql = "DELETE FROM receita WHERE id = ?"
+        conn.execute(sql, (paciente_id,))
+
+
+    def _delete_receitaitem(self, conn, receita_id):
+        sql = "DELETE FROM receita_item WHERE receita_id = ?"
+        conn.execute(sql, (receita_id,))
