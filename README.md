@@ -1,5 +1,15 @@
 # Assistencia_Farmaceutica
 
+## Componentes
+- Alan César Rebouças de Araújo Carvalho
+- Carlos Silvano de Oliveira Junior
+- Erick Henrique da Silva Paz
+- Félix Luiz Garção Filho
+- Hanna Vitória de Oliveira Silva
+- Mateus Santana Uchoa de Melo
+- Matheus Silva Mendes
+- Pedro Henrique da Silva Paixão
+  
 ## Descrição
   Este projeto foi desenvolvido por alunos de Ciências e Tecnologia (C&T) e Engenharia de Computação na UFRN para a disciplina de ECT3517 - CIÊNCIAS E TECNOLOGIAS APLICADAS 3.
   
